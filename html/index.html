@@ -57,6 +57,7 @@
     {% autoescape None %}
     var TEMPLATES = {}
     SITEURL = '{{cloud_url}}'
+    PLUGINS_URL      = '{{plugins_url}}'
     PEDALBOARDS_URL  = '{{pedalboards_url}}'
     CONTROLCHAIN_URL = '{{controlchain_url}}'
     LV2_PLUGIN_DIR   = '{{lv2_plugin_dir}}'
@@ -510,21 +511,23 @@ $('document').ready(function() {
         <!-- CC DEVICE UPDATE WINDOW -->
         <div id="cc-device-update-window" class="save-popup mod-hidden">
             <div class="mod-box" style="width: 600px; margin:-150px -280px">
-                <h1 class="pull-left">Control-Chain Device Update</h1><span class="js-cancel close">&times;</span>
+                <h1 class="pull-left">Control Chain Device Update</h1><span class="js-cancel close">&times;</span>
                 <form class="bottom">
                     <div class="clearfix"></div>
                     <div id="cc-device-update-text">
                         <p>
-                            Your Control-Chain device firmware is ready to be updated.
+                            Your Control Chain device firmware is ready to be updated.
                         </p>
                         <p>
                             To begin, follow these steps:
                         </p>
                         <ul>
-                            <li>Disconnect the device from the control-chain/ethernet port</li>
-                            <li>Hold down the first footswitch on the control-chain device</li>
-                            <li>While the first footswitch is down, connect the device to the MOD via USB</li>
+                            <li>Disconnect the device from the Control Chain/Ethernet port</li>
+                            <li>Hold down the first footswitch on the Control Chain device</li>
+                            <li>While the first footswitch is down, connect the device to the MOD Duo via USB</li>
                             <li>Wait for the "update completed" message</li>
+                            <li>Disconnect the device from the USB port</li>
+                            <li>Connect it to the Control Chain/Ethernet port once again</li>
                         </ul>
                         <p>
                             Note: The update should only take a few seconds.
@@ -778,7 +781,7 @@ $('document').ready(function() {
     <!-- MOD UPDATE/UPGRADE TOOLTIP -->
     <div class="tooltip mod-hidden" style="right:102px;">
         <div class="arrow"></div>
-        <div class="text">New updates are available. Click to know more.</div>
+        <div class="text">New updates are available. Click to learn more.</div>
     </div>
     <!-- END MOD UPDATE/UPGRADE TOOLTIP -->
 

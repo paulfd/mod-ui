@@ -33,7 +33,7 @@ from uuid import uuid4
 
 from mod.settings import (APP, LOG,
                           HTML_DIR, DOWNLOAD_TMP_DIR, DEVICE_KEY, DEVICE_WEBSERVER_PORT,
-                          CLOUD_HTTP_ADDRESS, PEDALBOARDS_HTTP_ADDRESS, CONTROLCHAIN_HTTP_ADDRESS,
+                          CLOUD_HTTP_ADDRESS, PLUGINS_HTTP_ADDRESS, PEDALBOARDS_HTTP_ADDRESS, CONTROLCHAIN_HTTP_ADDRESS,
                           LV2_PLUGIN_DIR, LV2_PEDALBOARDS_DIR, IMAGE_VERSION,
                           UPDATE_CC_FIRMWARE_FILE, UPDATE_MOD_OS_FILE, USING_256_FRAMES_FILE,
                           DEFAULT_ICON_TEMPLATE, DEFAULT_SETTINGS_TEMPLATE, DEFAULT_ICON_IMAGE,
@@ -1058,9 +1058,6 @@ class TemplateHandler(TimelessRequestHandler):
             context = getattr(self, section)()
         except AttributeError:
             context = {}
-        context['cloud_url']  = CLOUD_HTTP_ADDRESS
-        context['bufferSize'] = get_jack_buffer_size()
-        context['sampleRate'] = get_jack_sample_rate()
         self.write(loader.load(path).generate(**context))
 
     def get_version(self):
@@ -1071,8 +1068,6 @@ class TemplateHandler(TimelessRequestHandler):
         return str(int(time.time()))
 
     def index(self):
-        context = {}
-
         user_id = safe_json_load(USER_ID_JSON_FILE, dict)
         prefs   = safe_json_load(PREFERENCES_JSON_FILE, dict)
 
@@ -1094,6 +1089,7 @@ class TemplateHandler(TimelessRequestHandler):
             'default_settings_template': default_settings_template,
             'default_pedalboard': DEFAULT_PEDALBOARD,
             'cloud_url': CLOUD_HTTP_ADDRESS,
+            'plugins_url': PLUGINS_HTTP_ADDRESS,
             'pedalboards_url': PEDALBOARDS_HTTP_ADDRESS,
             'controlchain_url': CONTROLCHAIN_HTTP_ADDRESS,
             'hardware_profile': b64encode(json.dumps(SESSION.get_hardware_actuators()).encode("utf-8")),
@@ -1110,15 +1106,19 @@ class TemplateHandler(TimelessRequestHandler):
             'user_email': squeeze(user_id.get("email", "").replace("'", "\\'")),
             'favorites': json.dumps(gState.favorites),
             'preferences': json.dumps(prefs),
+            'bufferSize': get_jack_buffer_size(),
+            'sampleRate': get_jack_sample_rate(),
         }
         return context
 
-    def icon(self):
-        return self.index()
-
     def pedalboard(self):
-        context = self.index()
         bundlepath = self.get_argument('bundlepath')
+
+        with open(DEFAULT_ICON_TEMPLATE, 'r') as fh:
+            default_icon_template = squeeze(fh.read().replace("'", "\\'"))
+
+        with open(DEFAULT_SETTINGS_TEMPLATE, 'r') as fh:
+            default_settings_template = squeeze(fh.read().replace("'", "\\'"))
 
         try:
             pedalboard = get_pedalboard_info(bundlepath)
@@ -1133,7 +1133,12 @@ class TemplateHandler(TimelessRequestHandler):
                 'hardware': {},
             }
 
-        context['pedalboard'] = b64encode(json.dumps(pedalboard).encode("utf-8"))
+        context = {
+            'default_icon_template': default_icon_template,
+            'default_settings_template': default_settings_template,
+            'pedalboard': b64encode(json.dumps(pedalboard).encode("utf-8"))
+        }
+
         return context
 
 class TemplateLoader(TimelessRequestHandler):

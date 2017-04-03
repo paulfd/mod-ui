@@ -843,16 +843,16 @@ class Host(object):
             speed   = 1.0 if (rolling != 0) else 0.0
             bpm     = float(msg[2])
 
-            for instance_id, plugin in self.plugins.items():
-                _, _2, bpm_symbol, speed_symbol = plugin['designations']
+            for instance_id, pluginData in self.plugins.items():
+                _, _2, bpm_symbol, speed_symbol = pluginData['designations']
 
                 if bpm_symbol is not None:
                     self.plugins[instance_id]['ports'][bpm_symbol] = bpm
-                    self.msg_callback("param_set %s %s %f" % (plugin['instance'], bpm_symbol, bpm))
+                    self.msg_callback("param_set %s %s %f" % (pluginData['instance'], bpm_symbol, bpm))
 
                 elif speed_symbol is not None:
                     self.plugins[instance_id]['ports'][speed_symbol] = speed
-                    self.msg_callback("param_set %s %s %f" % (plugin['instance'], speed_symbol, speed))
+                    self.msg_callback("param_set %s %s %f" % (pluginData['instance'], speed_symbol, speed))
 
             self.transport_rolling = bool(rolling)
             self.transport_bpm     = bpm
@@ -1337,7 +1337,7 @@ class Host(object):
             pluginData['ports'].update(portValues)
 
             used_actuators = []
-            enabled_symbol, freewheel_symbol, bpm_symbol, speed_symbol = plugin['designations']
+            enabled_symbol, freewheel_symbol, bpm_symbol, speed_symbol = pluginData['designations']
 
             for symbol, value in pluginData['ports'].items():
                 if symbol == enabled_symbol:
@@ -1795,6 +1795,10 @@ class Host(object):
         self.load_pb_plugins(pb['plugins'], instances, rinstances)
         self.load_pb_connections(pb['connections'], mappedOldMidiIns, mappedOldMidiOuts,
                                                     mappedNewMidiIns, mappedNewMidiOuts)
+
+        # TODO: save&load rolling and bpm
+        #if True:
+            #self.set_transport(True, 120.0)
 
         self.addressings.load(bundlepath, instances)
         self.addressings.registerMappings(self.msg_callback, "/graph/", rinstances)

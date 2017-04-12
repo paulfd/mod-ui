@@ -1219,6 +1219,11 @@ class PedalboardList(JsonRequestHandler):
             default_pb['broken'] = False
         self.write(all)
 
+class PedalboardCurrent(JsonRequestHandler):
+    def get(self):
+        self.write(SESSION.host.pedalboard_path)
+        #self.write(get_all_pedalboards())
+
 class PedalboardSave(JsonRequestHandler):
     @web.asynchronous
     @gen.engine
@@ -2146,6 +2151,7 @@ application = web.Application(
 
             # pedalboard stuff
             (r"/pedalboard/list", PedalboardList),
+            (r"/pedalboard/current", PedalboardCurrent),
             (r"/pedalboard/save", PedalboardSave),
             (r"/pedalboard/pack_bundle/?", PedalboardPackBundle),
             (r"/pedalboard/load_bundle/", PedalboardLoadBundle),

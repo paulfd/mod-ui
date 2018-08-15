@@ -718,9 +718,11 @@ function Desktop(elements) {
 
     this.setupApp = function () {
         self.isApp = true
-        $('#mod-bank').hide()
+        // $('#mod-bank').hide()
         $('#mod-file-manager').hide()
         $('#mod-settings').hide()
+        $('#mod-bypassLeft').hide()
+        $('#mod-bypassRight').hide()
         $('#pedalboards-library').find('a').hide()
     }
 

@@ -55,7 +55,7 @@ from mod.protocol import (
 )
 from modtools.utils import (
     charPtrToString,
-                       is_bundle_loaded, add_bundle_to_lilv_world, remove_bundle_from_lilv_world, rescan_plugin_presets,
+    is_bundle_loaded, add_bundle_to_lilv_world, remove_bundle_from_lilv_world, rescan_plugin_presets,
     get_plugin_info, get_plugin_control_inputs_and_monitored_outputs, get_pedalboard_info, get_state_port_values,
     list_plugins_in_bundle, get_all_pedalboards, get_pedalboard_plugin_values,
     init_jack, close_jack, get_jack_data,
@@ -344,7 +344,7 @@ class Host(object):
 
                 if os.path.exists("/sys/class/thermal/thermal_zone0/temp"):
                     self.thermalfile = open("/sys/class/thermal/thermal_zone0/temp", 'r')
-        else:
+                else:
                     self.thermalfile = None
 
                 if os.path.exists("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"):
@@ -465,7 +465,7 @@ class Host(object):
         isOutput = bool(isOutput)
 
         if name.startswith(self.jack_slave_prefix+":"):
-            name  = name.replace(self.jack_slave_prefix+":","")
+            name = name.replace(self.jack_slave_prefix+":","")
             if name.startswith("midi_"):
                 ptype = "midi"
             elif name.startswith(CV_PREFIX):
@@ -499,12 +499,12 @@ class Host(object):
                     oldnode = "/graph/" + port_symbol.split(":",1)[-1]
                     port_symbol = name
                 elif isOutput:
-                        oldnode = "/graph/" + split[1].split(":",1)[-1]
-                        split[1] = name
-                    else:
-                        oldnode = "/graph/" + split[0].split(":",1)[-1]
-                        split[0] = name
-                    port_symbol = ";".join(split)
+                    oldnode = "/graph/" + split[1].split(":",1)[-1]
+                    split[1] = name
+                else:
+                    oldnode = "/graph/" + split[0].split(":",1)[-1]
+                    split[0] = name
+                port_symbol = ";".join(split)
 
                 self.midiports[i][0] = port_symbol
                 break
@@ -750,7 +750,7 @@ class Host(object):
             if portsymbol == ":rolling":
                 return 1.0 if self.transport_rolling else 0.0
 
-            pluginData = self.plugins[instance_id]
+        pluginData = self.plugins[instance_id]
 
         if portsymbol == ":bypass":
             return 1.0 if pluginData['bypassed'] else 0.0
@@ -763,7 +763,7 @@ class Host(object):
         return pluginData['ports'][portsymbol]
 
     def addr_task_store_address_data(self, instance_id, portsymbol, data):
-            pluginData = self.plugins[instance_id]
+        pluginData = self.plugins[instance_id]
         pluginData['addressings'][portsymbol] = data
 
     def addr_task_hw_added(self, dev_uri, label, labelsuffix, version):
@@ -1137,7 +1137,7 @@ class Host(object):
             bank = self.banks[bank_id-1]
             pedalboards = bank['pedalboards']
 
-            else:
+        else:
             bank_id = 0
             pedalboards = self.allpedalboards
 
@@ -1149,19 +1149,19 @@ class Host(object):
                 if pb['bundle'] == pedalboard:
                     pedalboard_id = num
                     break
-        else:
+            else:
                 # we loaded a pedalboard that is not in the bank, try loading from "all pedalboards" bank
-            bank_id = 0
-            pedalboards = self.allpedalboards
+                bank_id = 0
+                pedalboards = self.allpedalboards
 
                 for num, pb in enumerate(pedalboards):
-            if pb['bundle'] == pedalboard:
-                pedalboard_id = num
-                break
-        else:
+                    if pb['bundle'] == pedalboard:
+                        pedalboard_id = num
+                        break
+                else:
                     # well, shit
-            pedalboard_id = 0
-            pedalboard = ""
+                    pedalboard_id = 0
+                    pedalboard = ""
 
         else:
             pedalboard_id = 0
@@ -1288,8 +1288,8 @@ class Host(object):
                         return
 
                     try:
-                    if instance_id == PEDALBOARD_INSTANCE_ID:
-                        value = int(pluginData['mapPresets'][value].replace("file:///",""))
+                        if instance_id == PEDALBOARD_INSTANCE_ID:
+                            value = int(pluginData['mapPresets'][value].replace("file:///",""))
                             yield gen.Task(self.snapshot_load_gen_helper, value, False, abort_catcher)
                         else:
                             yield gen.Task(self.preset_load_gen_helper, instance, pluginData['mapPresets'][value], False, abort_catcher)
@@ -1376,13 +1376,13 @@ class Host(object):
             channel  = int(msg_data[1])+1
 
             if channel == self.profile.get_midi_prgch_channel("pedalboard"):
-            bank_id = self.bank_id
-            if self.bank_id > 0 and self.bank_id <= len(self.banks):
-                pedalboards = self.banks[self.bank_id-1]['pedalboards']
-            else:
-                pedalboards = self.allpedalboards
+                bank_id = self.bank_id
+                if self.bank_id > 0 and self.bank_id <= len(self.banks):
+                    pedalboards = self.banks[self.bank_id-1]['pedalboards']
+                else:
+                    pedalboards = self.allpedalboards
 
-            if program >= 0 and program < len(pedalboards):
+                if program >= 0 and program < len(pedalboards):
                     while self.next_hmi_pedalboard_loading:
                         yield gen.sleep(0.25)
                     try:
@@ -1690,22 +1690,22 @@ class Host(object):
                 websocket.write_message("add_hw_port /graph/midi_merger_out midi 0 All_MIDI_In 1")
 
         else:
-        if self.hasSerialMidiIn:
-            websocket.write_message("add_hw_port /graph/serial_midi_in midi 0 Serial_MIDI_In 0")
+            if self.hasSerialMidiIn:
+                websocket.write_message("add_hw_port /graph/serial_midi_in midi 0 Serial_MIDI_In 0")
 
-        ports = get_jack_hardware_ports(False, False)
-        for i in range(len(ports)):
-            name = ports[i]
-            if name not in midiports and not name.startswith("%s:midi_" % self.jack_slave_prefix):
-                continue
-            alias = get_jack_port_alias(name)
+            ports = get_jack_hardware_ports(False, False)
+            for i in range(len(ports)):
+                name = ports[i]
+                if name not in midiports and not name.startswith("%s:midi_" % self.jack_slave_prefix):
+                    continue
+                alias = get_jack_port_alias(name)
 
-            if alias:
+                if alias:
                     title = midi_port_alias_to_name(alias, False)
-            else:
-                title = name.split(":",1)[-1].title()
-            title = title.replace(" ","_")
-            websocket.write_message("add_hw_port /graph/%s midi 0 %s %i" % (name.split(":",1)[-1], title, i+1))
+                else:
+                    title = name.split(":",1)[-1].title()
+                title = title.replace(" ","_")
+                websocket.write_message("add_hw_port /graph/%s midi 0 %s %i" % (name.split(":",1)[-1], title, i+1))
 
         # MIDI Out
         if self.midi_aggregated_mode:
@@ -1713,21 +1713,21 @@ class Host(object):
                 websocket.write_message("add_hw_port /graph/midi_broadcaster_in midi 1 All_MIDI_Out 1")
 
         else:
-        if self.hasSerialMidiOut:
-            websocket.write_message("add_hw_port /graph/serial_midi_out midi 1 Serial_MIDI_Out 0")
+            if self.hasSerialMidiOut:
+                websocket.write_message("add_hw_port /graph/serial_midi_out midi 1 Serial_MIDI_Out 0")
 
-        ports = get_jack_hardware_ports(False, True)
-        for i in range(len(ports)):
-            name = ports[i]
-            if name not in midiports and not name.startswith("%s:midi_" % self.jack_slave_prefix):
-                continue
-            alias = get_jack_port_alias(name)
-            if alias:
+            ports = get_jack_hardware_ports(False, True)
+            for i in range(len(ports)):
+                name = ports[i]
+                if name not in midiports and not name.startswith("%s:midi_" % self.jack_slave_prefix):
+                    continue
+                alias = get_jack_port_alias(name)
+                if alias:
                     title = midi_port_alias_to_name(alias, False)
-            else:
-                title = name.split(":",1)[-1].title()
-            title = title.replace(" ","_")
-            websocket.write_message("add_hw_port /graph/%s midi 1 %s %i" % (name.split(":",1)[-1], title, i+1))
+                else:
+                    title = name.split(":",1)[-1].title()
+                title = title.replace(" ","_")
+                websocket.write_message("add_hw_port /graph/%s midi 1 %s %i" % (name.split(":",1)[-1], title, i+1))
 
         rinstances = {
             PEDALBOARD_INSTANCE_ID: PEDALBOARD_INSTANCE
@@ -2115,9 +2115,9 @@ class Host(object):
 
             elif actuator_type == Addressings.ADDRESSING_TYPE_CC or actuator_type == Addressings.ADDRESSING_TYPE_CV:
                 try:
-                yield gen.Task(self.addr_task_unaddressing, actuator_type,
-                                                            addressing['instance_id'],
-                                                            addressing['port'])
+                    yield gen.Task(self.addr_task_unaddressing, actuator_type,
+                                                                addressing['instance_id'],
+                                                                addressing['port'])
                 except Exception as e:
                     logging.exception(e)
 
@@ -2512,16 +2512,16 @@ class Host(object):
 
         else:
             if idx < 0 or idx >= len(self.pedalboard_snapshots):
-            callback(False)
-            return
+                callback(False)
+                return
 
             snapshot = self.pedalboard_snapshots[idx]
             is_hmi_snapshot = False
 
             if snapshot is None:
-            print("ERROR: Asked to load an invalid pedalboard preset, number", idx)
-            callback(False)
-            return
+                print("ERROR: Asked to load an invalid pedalboard preset, number", idx)
+                callback(False)
+                return
 
             self.current_pedalboard_snapshot_id = idx
             self.plugins[PEDALBOARD_INSTANCE_ID]['preset'] = "file:///%i" % idx
@@ -2540,13 +2540,13 @@ class Host(object):
                 continue
 
             try:
-            instance_id = self.mapper.get_id_without_creating(instance)
+                instance_id = self.mapper.get_id_without_creating(instance)
             except KeyError:
                 self.plugins_removed.append(instance)
                 continue
 
-            pluginData  = self.plugins[instance_id]
-            diffBypass  = pluginData['bypassed'] != data['bypassed']
+            pluginData = self.plugins[instance_id]
+            diffBypass = pluginData['bypassed'] != data['bypassed']
 
             if diffBypass:
                 addressing = pluginData['addressings'].get(":bypass", None)
@@ -2613,7 +2613,7 @@ class Host(object):
 
         if not is_hmi_snapshot:
             # TODO: change to pedal_snapshot?
-        self.msg_callback("pedal_preset %d" % idx)
+            self.msg_callback("pedal_preset %d" % idx)
 
             if not from_hmi:
                 try:
@@ -2796,7 +2796,7 @@ class Host(object):
         self.first_pedalboard = False
 
         try:
-        pb = get_pedalboard_info(bundlepath)
+            pb = get_pedalboard_info(bundlepath)
         except:
             self.bank_id = 0
             try:
@@ -2827,15 +2827,15 @@ class Host(object):
             self.set_midi_devices_change_mode(midi_aggregated_mode)
 
         if not self.midi_aggregated_mode:
-        # MIDI Devices might change port names at anytime
-        # To properly restore MIDI HW connections we need to map the "old" port names (from project)
-        mappedOldMidiIns   = dict((p['symbol'], p['name']) for p in pb['hardware']['midi_ins'])
-        mappedOldMidiOuts  = dict((p['symbol'], p['name']) for p in pb['hardware']['midi_outs'])
-        mappedOldMidiOuts2 = dict((p['name'], p['symbol']) for p in pb['hardware']['midi_outs'])
+            # MIDI Devices might change port names at anytime
+            # To properly restore MIDI HW connections we need to map the "old" port names (from project)
+            mappedOldMidiIns   = dict((p['symbol'], p['name']) for p in pb['hardware']['midi_ins'])
+            mappedOldMidiOuts  = dict((p['symbol'], p['name']) for p in pb['hardware']['midi_outs'])
+            mappedOldMidiOuts2 = dict((p['name'], p['symbol']) for p in pb['hardware']['midi_outs'])
             mappedNewMidiIns   = OrderedDict((midi_port_alias_to_name(get_jack_port_alias(p), True),
-                                          p.split(":",1)[-1]) for p in get_jack_hardware_ports(False, False))
+                                            p.split(":",1)[-1]) for p in get_jack_hardware_ports(False, False))
             mappedNewMidiOuts  = OrderedDict((midi_port_alias_to_name(get_jack_port_alias(p), True),
-                                          p.split(":",1)[-1]) for p in get_jack_hardware_ports(False, True))
+                                            p.split(":",1)[-1]) for p in get_jack_hardware_ports(False, True))
 
         else:
             mappedOldMidiIns  = {}
@@ -4070,7 +4070,7 @@ _:b%i
     def address(self, instance, portsymbol, actuator_uri, label, minimum, maximum, value, steps, extras, callback,
                 not_param_set=False, send_hmi=True):
         instance_id = self.mapper.get_id(instance)
-            pluginData = self.plugins.get(instance_id, None)
+        pluginData  = self.plugins.get(instance_id, None)
 
         tempo = extras.get('tempo', False)
         dividers = extras.get('dividers', None)
@@ -4109,28 +4109,28 @@ _:b%i
                         pluginData['midiCCs'][portsymbol] = (-1, -1, 0.0, 1.0)
 
                 else:
-            # Changing ranges without changing MIDI CC
-                if -1 in (channel, controller):
-                    # error
-                    actuator_uri = None
+                    # Changing ranges without changing MIDI CC
+                    if -1 in (channel, controller):
+                        # error
+                        actuator_uri = None
 
-                else:
-                    if portsymbol == ":bypass":
-                        pluginData['bypassCC'] = (channel, controller)
                     else:
-                        pluginData['midiCCs'][portsymbol] = (channel, controller, minimum, maximum)
+                        if portsymbol == ":bypass":
+                            pluginData['bypassCC'] = (channel, controller)
+                        else:
+                            pluginData['midiCCs'][portsymbol] = (channel, controller, minimum, maximum)
 
-                    pluginData['addressings'][portsymbol] = self.addressings.add_midi(instance_id,
-                                                                                      portsymbol,
-                                                                                      channel, controller,
-                                                                                      minimum, maximum)
+                        pluginData['addressings'][portsymbol] = self.addressings.add_midi(instance_id,
+                                                                                          portsymbol,
+                                                                                          channel, controller,
+                                                                                          minimum, maximum)
 
                         self.send_modified("midi_map %d %s %i %i %f %f" % (instance_id,
-                                                                              portsymbol,
-                                                                              channel,
-                                                                              controller,
-                                                                              minimum,
-                                                                              maximum), callback, datatype='boolean')
+                                                                           portsymbol,
+                                                                           channel,
+                                                                           controller,
+                                                                           minimum,
+                                                                           maximum), callback, datatype='boolean')
                         return
 
             self.addressings.remove(old_addressing)
@@ -4146,8 +4146,8 @@ _:b%i
                     old_hw_ids = [self.addressings.hmi_uri2hw_map[old_actuator_uri]]
 
                 try:
-            yield gen.Task(self.addr_task_unaddressing, old_actuator_type,
-                                                        old_addressing['instance_id'],
+                    yield gen.Task(self.addr_task_unaddressing, old_actuator_type,
+                                                                old_addressing['instance_id'],
                                                                 old_addressing['port'],
                                                                 send_hmi=send_hmi,
                                                                 hw_ids=old_hw_ids)
@@ -4176,8 +4176,8 @@ _:b%i
                     logging.exception(e)
                 return
             else:
-            callback(True)
-            return
+                callback(True)
+                return
 
         is_hmi_actuator = self.addressings.is_hmi_actuator(actuator_uri)
 
@@ -4189,9 +4189,9 @@ _:b%i
         # MIDI learn is not an actual addressing
         if actuator_uri == kMidiLearnURI:
             self.send_notmodified("midi_learn %d %s %f %f" % (instance_id,
-                                                                     portsymbol,
-                                                                     minimum,
-                                                                     maximum), callback, datatype='boolean')
+                                                              portsymbol,
+                                                              minimum,
+                                                              maximum), callback, datatype='boolean')
             return
 
         needsValueChange = False
@@ -4236,9 +4236,9 @@ _:b%i
                                               label, minimum, maximum, steps, value, tempo, dividers, page, None,
                                               coloured, momentary, operational_mode)
 
-        if addressing is None:
-            callback(False)
-            return
+            if addressing is None:
+                callback(False)
+                return
             if needsValueChange:
                 if actuator_uri != kBpmURI and is_hmi_actuator:
                     hw_id = self.addressings.hmi_uri2hw_map[actuator_uri]
@@ -4442,7 +4442,7 @@ _:b%i
             startIndex = 0
         elif pedalboard_id+4 >= numPedals:
             startIndex = numPedals - 9
-            else:
+        else:
             startIndex = pedalboard_id - 4
 
         endIndex = min(startIndex+9, numPedals)
@@ -4594,7 +4594,7 @@ _:b%i
 
         instance_id, portsymbol = self.get_addressed_port_info(hw_id)
         try:
-        instance = self.mapper.get_instance(instance_id)
+            instance = self.mapper.get_instance(instance_id)
         except KeyError:
             print("WARNING: hmi_parameter_set requested for non-existing plugin")
             callback(False)
@@ -4670,7 +4670,7 @@ _:b%i
                 elif portsymbol == ":rolling":
                     rolling = bool(value > 0.5)
                     self.set_transport_rolling(rolling, True, False, True)
-        else:
+            else:
                 print("ERROR: Trying to set value for the wrong pedalboard port:", portsymbol)
                 callback(False)
                 return
@@ -4919,15 +4919,15 @@ _:b%i
             instance_id = self.mapper.get_id(instance)
             pluginData  = self.plugins[instance_id]
 
-            bypassed = bool(p['bypassed'])
+            bypassed    = bool(p['bypassed'])
             diffBypass  = pluginData['bypassed'] != p['bypassed']
 
             if diffBypass:
-            addressing = pluginData['addressings'].get(":bypass", None)
-            if addressing is not None:
-                addressing['value'] = 1.0 if bypassed else 0.0
-                if addressing['actuator_uri'] not in used_actuators:
-                    used_actuators.append(addressing['actuator_uri'])
+                addressing = pluginData['addressings'].get(":bypass", None)
+                if addressing is not None:
+                    addressing['value'] = 1.0 if bypassed else 0.0
+                    if addressing['actuator_uri'] not in used_actuators:
+                        used_actuators.append(addressing['actuator_uri'])
 
             # if bypassed, do it now
             if diffBypass and bypassed:
@@ -4945,11 +4945,11 @@ _:b%i
                 except Exception as e:
                     logging.exception(e)
 
-            addressing = pluginData['addressings'].get(":presets", None)
-            if addressing is not None:
+                addressing = pluginData['addressings'].get(":presets", None)
+                if addressing is not None:
                     addressing['value'] = pluginData['mapPresets'].index(p['preset'])
-                if addressing['actuator_uri'] not in used_actuators:
-                    used_actuators.append(addressing['actuator_uri'])
+                    if addressing['actuator_uri'] not in used_actuators:
+                        used_actuators.append(addressing['actuator_uri'])
 
             for port in p['ports']:
                 symbol = port['symbol']
@@ -5003,7 +5003,7 @@ _:b%i
                 return
 
             if self.current_tuner_mute:
-            self.mute()
+                self.mute()
 
             callback(True)
 
@@ -5020,7 +5020,7 @@ _:b%i
 
         def tuner_removed(_):
             if self.current_tuner_mute:
-            self.unmute()
+                self.unmute()
             callback(True)
 
         self.send_notmodified("remove %d" % TUNER_INSTANCE_ID, tuner_removed)
@@ -5048,7 +5048,7 @@ _:b%i
 
         freq, note, cents = find_freqnotecents(value)
         try:
-        yield gen.Task(self.hmi.tuner, freq, note, cents)
+            yield gen.Task(self.hmi.tuner, freq, note, cents)
         except Exception as e:
             logging.exception(e)
 
@@ -5481,12 +5481,12 @@ _:b%i
         full_ports = {}
 
         # Current setup
-        #for port_symbol, port_alias, _ in self.midiports:
-        #    port_aliases = port_alias.split(";",1)
-        #    port_alias   = port_aliases[0]
-        #    if len(port_aliases) != 1:
-        #        out_ports[port_alias] = port_symbol
-        #    full_ports[port_symbol] = port_alias
+        for port_symbol, port_alias, _ in self.midiports:
+            port_aliases = port_alias.split(";",1)
+            port_alias   = port_aliases[0]
+            if len(port_aliases) != 1:
+                out_ports[port_alias] = port_symbol
+            full_ports[port_symbol] = port_alias
 
         # Extra MIDI Outs
         ports = get_jack_hardware_ports(False, True)
@@ -5497,7 +5497,7 @@ _:b%i
             if not alias:
                 continue
             title = midi_port_alias_to_name(alias, True)
-            out_ports[port] = title
+            out_ports[title] = port
 
         # Extra MIDI Ins
         ports = get_jack_hardware_ports(False, False)
@@ -5520,13 +5520,7 @@ _:b%i
             devList.append(port_id)
             if port_id in midiportIds:
                 devsInUse.append(port_id)
-            names[port_id] = port_alias +" (in)"
-
-        for port_id, port_alias in out_ports.items():
-            devList.append(";" + port_id)
-            if ";" + port_id in midiportIds:
-                devsInUse.append(";" + port_id)
-            names[";" + port_id] = port_alias + " (out)"
+            names[port_id] = port_alias + (" (in+out)" if port_alias in out_ports else " (in)")
 
         devList.sort()
         return (devsInUse, devList, names, self.midi_aggregated_mode)
@@ -5640,8 +5634,7 @@ _:b%i
 
             if ";" in port_symbol:
                 inp, outp = port_symbol.split(";",1)
-                if (inp):
-                    remove_port(inp)
+                remove_port(inp)
                 remove_port(outp)
             else:
                 remove_port(port_symbol)
@@ -5658,8 +5651,7 @@ _:b%i
                 title_in  = self.get_port_name_alias(inp)
                 title_out = self.get_port_name_alias(outp)
                 title     = title_in + ";" + title_out
-                if (inp):
-                    add_port(inp, title_in, False)
+                add_port(inp, title_in, False)
                 add_port(outp, title_out, True)
 
             else:

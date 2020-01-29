@@ -729,6 +729,8 @@ function Desktop(elements) {
         $('#mod-cloud-plugins').hide()
         $('#mod-settings').hide()
         $('#pedalboard-info .js-cloud').hide()
+        $('#js-cv-addressing-toggle').hide()
+        $('#effect-tab-ControlVoltage').hide()
     }
 
     this.effectBox = self.makeEffectBox(elements.effectBox,

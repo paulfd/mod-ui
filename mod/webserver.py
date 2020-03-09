@@ -23,6 +23,8 @@ import subprocess
 import sys
 import time
 
+sys.modules['tornado'] = __import__('tornado4')
+
 from base64 import b64decode, b64encode
 from signal import signal, SIGUSR1, SIGUSR2
 from tornado import gen, iostream, web, websocket

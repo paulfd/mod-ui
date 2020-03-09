@@ -31,7 +31,7 @@ setup(name = 'mod',
       packages = find_packages(),
       entry_points = {
           'console_scripts': [
-              'mod-ui = mod.webserver:run',
+              'mod-ui = mod.modep:run',
           ]
       },
       scripts = [
@@ -122,7 +122,7 @@ setup(name = 'mod',
                     (('share/mod/html/resources/pedals'), glob('html/resources/pedals/*.css')),
                     (('share/mod/html/resources/templates'), glob('html/resources/templates/*.html')),
       ],
-      install_requires = ['tornado','pil','pystache','pycrypto','aggdraw','pyserial'],
+      install_requires = ['tornado4','pil','pystache','pycrypto','aggdraw','pyserial'],
 
       classifiers = [
           'Intended Audience :: Developers',

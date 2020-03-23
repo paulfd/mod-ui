@@ -530,14 +530,21 @@ function HardwareManager(options) {
 
         var actuators = self.availableActuators(instance, port, currentAddressing.tempo)
         var typeOptions = [kNullAddressURI, deviceOption, kMidiLearnURI, ccOption]
+        var hiddenOptions = [deviceOption, ccOption]
         var i = 0
         typeSelect.find('option').unwrap().each(function() {
+            if (hiddenOptions.includes(typeOptions[i])) {
+                $(this).remove()
+                i++
+                return
+            }
             var btn = $('<div class="btn js-type" data-value="'+typeOptions[i]+'">'+$(this).text()+'</div>')
             if($(btn).attr('data-value') == typeInput.val()) {
               btn.addClass('selected')
             }
             if ($(btn).attr('data-value') === kMidiLearnURI && !actuators[kMidiLearnURI]) {
               $(btn).hide()
+              form.find('.midi-no-mapping-possible').show()
             }
             $(this).replaceWith(btn)
             i++

@@ -719,7 +719,7 @@ function Desktop(elements) {
         $('#mod-bypassLeft').hide()
         $('#mod-bypassRight').hide()
         $('#pedalboards-library').find('a').hide()
-        $('#mod-transport-icon').hide()
+        //$('#mod-transport-icon').hide()
         $('#mod-update').hide()
         $('#mod-cloud-plugins').hide()
         $('#mod-settings').hide()

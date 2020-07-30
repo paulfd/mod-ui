@@ -725,7 +725,7 @@ function Desktop(elements) {
 
     this.setupApp = function () {
         self.isApp = true
-        $('#mod-bank').hide()
+        // $('#mod-bank').hide()
         $('#pedalboards-library').find('a').hide()
     }
 
